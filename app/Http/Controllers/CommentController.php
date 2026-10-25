@@ -7,6 +7,7 @@ use App\Http\Requests\UpdateCommentRequest;
 use App\Models\Attachment;
 use App\Models\Comment;
 use App\Models\Post;
+use App\Models\Reaction;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Gate;
@@ -43,20 +44,27 @@ class CommentController extends Controller
     }
 
     /**
-     * Delete the comment, its nested replies, and every attachment file among them.
+     * Delete the comment, its nested replies, and every attachment file and reaction among them.
      */
     public function destroy(Comment $comment): RedirectResponse
     {
         Gate::authorize('delete', $comment);
 
         DB::transaction(function () use ($comment) {
-            // Replies are removed by the parent_id cascade, but their attachments are not.
+            $ids = [$comment->id, ...$comment->descendantIds()];
+
+            // Replies are removed by the parent_id cascade, but their attachments and reactions are not.
             Attachment::purge(
                 Attachment::query()
                     ->where('attachable_type', $comment->getMorphClass())
-                    ->whereIn('attachable_id', [$comment->id, ...$comment->descendantIds()])
+                    ->whereIn('attachable_id', $ids)
                     ->get(),
             );
+
+            Reaction::query()
+                ->where('reactable_type', $comment->getMorphClass())
+                ->whereIn('reactable_id', $ids)
+                ->delete();
 
             $comment->delete();
         });

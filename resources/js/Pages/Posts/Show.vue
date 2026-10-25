@@ -3,6 +3,7 @@ import AttachmentImages from '@/Components/AttachmentImages.vue';
 import CommentForm from '@/Components/CommentForm.vue';
 import CommentItem from '@/Components/CommentItem.vue';
 import DangerButton from '@/Components/DangerButton.vue';
+import ReactionButtons from '@/Components/ReactionButtons.vue';
 import BlogLayout from '@/Layouts/BlogLayout.vue';
 import { Head, Link, router, usePage } from '@inertiajs/vue3';
 import { computed } from 'vue';
@@ -131,6 +132,15 @@ const destroy = () => {
                         class="whitespace-pre-line p-6 leading-relaxed text-gray-800 sm:p-8 dark:text-gray-200"
                     >
                         {{ post.content }}
+                    </div>
+
+                    <div class="px-6 pb-6 sm:px-8 sm:pb-8">
+                        <ReactionButtons
+                            :url="route('posts.reaction', post.id)"
+                            :likes="post.likes_count"
+                            :dislikes="post.dislikes_count"
+                            :my-reaction="post.my_reaction"
+                        />
                     </div>
 
                     <section

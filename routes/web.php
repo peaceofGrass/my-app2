@@ -3,6 +3,7 @@
 use App\Http\Controllers\CommentController;
 use App\Http\Controllers\PostController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\ReactionController;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
@@ -27,6 +28,9 @@ Route::middleware('auth')->group(function () {
 
     Route::resource('posts', PostController::class)->only(['create', 'store', 'edit', 'update', 'destroy']);
     Route::resource('posts.comments', CommentController::class)->shallow()->only(['store', 'update', 'destroy']);
+
+    Route::post('/posts/{post}/reaction', [ReactionController::class, 'post'])->name('posts.reaction');
+    Route::post('/comments/{comment}/reaction', [ReactionController::class, 'comment'])->name('comments.reaction');
 });
 
 // Registered after the auth group so `posts/create` is not captured by `posts/{post}`.

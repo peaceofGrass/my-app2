@@ -3,6 +3,7 @@ import AttachmentImages from '@/Components/AttachmentImages.vue';
 import CommentForm from '@/Components/CommentForm.vue';
 import InputError from '@/Components/InputError.vue';
 import PrimaryButton from '@/Components/PrimaryButton.vue';
+import ReactionButtons from '@/Components/ReactionButtons.vue';
 import SecondaryButton from '@/Components/SecondaryButton.vue';
 import { router, useForm, usePage } from '@inertiajs/vue3';
 import { computed, ref } from 'vue';
@@ -107,10 +108,17 @@ const formatDate = (value) =>
             />
 
             <div
-                v-if="$page.props.auth.user && !editing"
-                class="mt-3 flex gap-4 text-xs font-medium"
+                v-if="!editing"
+                class="mt-3 flex flex-wrap items-center gap-4 text-xs font-medium"
             >
+                <ReactionButtons
+                    :url="route('comments.reaction', comment.id)"
+                    :likes="comment.likes_count"
+                    :dislikes="comment.dislikes_count"
+                    :my-reaction="comment.my_reaction"
+                />
                 <button
+                    v-if="$page.props.auth.user"
                     type="button"
                     class="text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-100"
                     :aria-expanded="replying"

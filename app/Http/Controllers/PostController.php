@@ -6,9 +6,12 @@ use App\Http\Requests\PostRequest;
 use App\Models\Attachment;
 use App\Models\Comment;
 use App\Models\Post;
+use App\Models\Reaction;
+use App\Models\User;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Redirect;
@@ -62,17 +65,17 @@ class PostController extends Controller
     }
 
     /**
-     * Display the post with its author, attachments, and comment tree.
+     * Display the post with its author, attachments, reactions, and comment tree.
      */
-    public function show(Post $post): Response
+    public function show(Request $request, Post $post): Response
     {
         Gate::authorize('view', $post);
 
-        $post->load(['user:id,name', 'attachments']);
+        $post->load(['user:id,name', 'attachments'])->loadReactionSummary($request->user());
 
         return Inertia::render('Posts/Show', [
             'post' => $post,
-            'comments' => $this->commentTree($post),
+            'comments' => $this->commentTree($post, $request->user()),
         ]);
     }
 
@@ -110,7 +113,7 @@ class PostController extends Controller
     }
 
     /**
-     * Delete the post along with its comments and every attachment file.
+     * Delete the post along with its comments, their reactions, and every attachment file.
      */
     public function destroy(Post $post): RedirectResponse
     {
@@ -125,6 +128,11 @@ class PostController extends Controller
                     ->get(),
             );
 
+            Reaction::query()
+                ->whereMorphedTo('reactable', $post)
+                ->orWhereHasMorph('reactable', Comment::class, fn (Builder $query) => $query->whereBelongsTo($post))
+                ->delete();
+
             $post->delete();
         });
 
@@ -132,14 +140,15 @@ class PostController extends Controller
     }
 
     /**
-     * Load all of the post's comments in one query and nest them by parent_id.
+     * Load all of the post's comments with their reaction summary in one query and nest them by parent_id.
      *
      * @return Collection<int, Comment>
      */
-    private function commentTree(Post $post): Collection
+    private function commentTree(Post $post, ?User $user): Collection
     {
         $comments = $post->comments()
             ->with(['user:id,name', 'attachments'])
+            ->withReactionSummary($user)
             ->oldest()
             ->oldest('id')
             ->get();

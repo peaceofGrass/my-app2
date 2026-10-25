@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Models\Concerns\HasAttachments;
+use App\Models\Concerns\HasReactions;
 use Database\Factories\CommentFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -14,7 +15,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 class Comment extends Model
 {
     /** @use HasFactory<CommentFactory> */
-    use HasAttachments, HasFactory;
+    use HasAttachments, HasFactory, HasReactions;
 
     /**
      * @return BelongsTo<User, $this>
