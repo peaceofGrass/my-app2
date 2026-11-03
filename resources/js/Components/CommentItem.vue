@@ -13,6 +13,11 @@ const props = defineProps({
         type: Object,
         required: true,
     },
+    // Author name of the comment being replied to; set only on replies.
+    replyTo: {
+        type: String,
+        default: null,
+    },
 });
 
 const page = usePage();
@@ -20,6 +25,26 @@ const page = usePage();
 const isAuthor = computed(
     () => page.props.auth.user?.id === props.comment.user_id,
 );
+
+// Replies are not indented further: every reply under a top-level comment
+// is listed at one level, oldest first, YouTube style.
+const replies = computed(() => {
+    if (props.replyTo !== null) {
+        return [];
+    }
+
+    const flatten = (comment) =>
+        comment.children.flatMap((child) => [
+            { comment: child, replyTo: comment.user.name },
+            ...flatten(child),
+        ]);
+
+    return flatten(props.comment).sort(
+        (a, b) =>
+            new Date(a.comment.created_at) - new Date(b.comment.created_at) ||
+            a.comment.id - b.comment.id,
+    );
+});
 
 const replying = ref(false);
 const editing = ref(false);
@@ -58,14 +83,14 @@ const formatDate = (value) =>
 
 <template>
     <li>
-        <div class="rounded-md bg-gray-50 p-4 dark:bg-gray-900/50">
+        <div class="rounded-md bg-stone-50 p-4 dark:bg-stone-900/50">
             <div class="flex items-center gap-2 text-sm">
-                <span class="font-semibold text-gray-800 dark:text-gray-200">
+                <span class="font-semibold text-stone-800 dark:text-stone-200">
                     {{ comment.user.name }}
                 </span>
                 <time
                     :datetime="comment.created_at"
-                    class="text-gray-500 dark:text-gray-400"
+                    class="text-stone-500 dark:text-stone-400"
                 >
                     {{ formatDate(comment.created_at) }}
                 </time>
@@ -81,7 +106,7 @@ const formatDate = (value) =>
                     rows="3"
                     maxlength="5000"
                     aria-label="댓글 수정"
-                    class="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 dark:focus:border-indigo-600 dark:focus:ring-indigo-600"
+                    class="block w-full rounded-md border-stone-300 shadow-sm focus:border-orange-500 focus:ring-orange-500 dark:border-stone-700 dark:bg-stone-900 dark:text-stone-300 dark:focus:border-orange-600 dark:focus:ring-orange-600"
                     required
                 />
                 <InputError :message="editForm.errors.content" />
@@ -96,8 +121,13 @@ const formatDate = (value) =>
             </form>
             <p
                 v-else
-                class="mt-2 whitespace-pre-line text-gray-700 dark:text-gray-300"
+                class="mt-2 whitespace-pre-line text-stone-700 dark:text-stone-300"
             >
+                <span
+                    v-if="replyTo !== null"
+                    class="font-medium text-orange-600 dark:text-orange-400"
+                    >@{{ replyTo }}:</span
+                >
                 {{ comment.content }}
             </p>
 
@@ -120,7 +150,7 @@ const formatDate = (value) =>
                 <button
                     v-if="$page.props.auth.user"
                     type="button"
-                    class="text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-100"
+                    class="text-stone-600 hover:text-stone-900 dark:text-stone-400 dark:hover:text-stone-100"
                     :aria-expanded="replying"
                     @click="replying = !replying"
                 >
@@ -129,7 +159,7 @@ const formatDate = (value) =>
                 <template v-if="isAuthor">
                     <button
                         type="button"
-                        class="text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-100"
+                        class="text-stone-600 hover:text-stone-900 dark:text-stone-400 dark:hover:text-stone-100"
                         @click="startEditing"
                     >
                         수정
@@ -145,7 +175,7 @@ const formatDate = (value) =>
             </div>
         </div>
 
-        <div v-if="replying" class="ms-4 mt-3 ps-4">
+        <div v-if="replying" :class="['mt-3', { 'ms-4 ps-4': !replyTo }]">
             <CommentForm
                 :post-id="comment.post_id"
                 :parent-id="comment.id"
@@ -156,13 +186,14 @@ const formatDate = (value) =>
         </div>
 
         <ul
-            v-if="comment.children.length"
-            class="ms-4 mt-3 space-y-3 border-s-2 border-gray-200 ps-4 dark:border-gray-700"
+            v-if="replies.length"
+            class="ms-4 mt-3 space-y-3 border-s-2 border-orange-300 ps-4 dark:border-orange-800"
         >
             <CommentItem
-                v-for="child in comment.children"
-                :key="child.id"
-                :comment="child"
+                v-for="reply in replies"
+                :key="reply.comment.id"
+                :comment="reply.comment"
+                :reply-to="reply.replyTo"
             />
         </ul>
     </li>

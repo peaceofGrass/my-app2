@@ -74,7 +74,7 @@ const remove = (index) => {
             >
                 이미지 선택
             </SecondaryButton>
-            <span class="text-xs text-gray-500 dark:text-gray-400">
+            <span class="text-xs text-stone-500 dark:text-stone-400">
                 {{ model.length }} / {{ max }} · JPG, PNG, GIF, WEBP (최대 5MB)
             </span>
         </div>

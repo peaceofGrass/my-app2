@@ -55,8 +55,8 @@ const react = (type) => {
             class="inline-flex items-center gap-1.5 rounded-full border px-3 py-1 transition duration-150 ease-in-out disabled:opacity-60"
             :class="
                 myReaction === 'like'
-                    ? 'border-indigo-500 bg-indigo-50 text-indigo-700 dark:border-indigo-400 dark:bg-indigo-900/40 dark:text-indigo-300'
-                    : 'border-gray-300 text-gray-600 hover:bg-gray-100 dark:border-gray-600 dark:text-gray-400 dark:hover:bg-gray-700'
+                    ? 'border-orange-500 bg-orange-50 text-orange-700 dark:border-orange-400 dark:bg-orange-900/40 dark:text-orange-300'
+                    : 'border-stone-300 text-stone-600 hover:bg-stone-100 dark:border-stone-600 dark:text-stone-400 dark:hover:bg-stone-700'
             "
             :aria-pressed="myReaction === 'like'"
             :disabled="processing"
@@ -73,7 +73,7 @@ const react = (type) => {
             :class="
                 myReaction === 'dislike'
                     ? 'border-red-500 bg-red-50 text-red-700 dark:border-red-400 dark:bg-red-900/40 dark:text-red-300'
-                    : 'border-gray-300 text-gray-600 hover:bg-gray-100 dark:border-gray-600 dark:text-gray-400 dark:hover:bg-gray-700'
+                    : 'border-stone-300 text-stone-600 hover:bg-stone-100 dark:border-stone-600 dark:text-stone-400 dark:hover:bg-stone-700'
             "
             :aria-pressed="myReaction === 'dislike'"
             :disabled="processing"

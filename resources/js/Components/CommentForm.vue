@@ -56,7 +56,7 @@ const submit = () => {
             maxlength="5000"
             :placeholder="parentId ? '답글을 입력하세요' : '댓글을 입력하세요'"
             :aria-label="parentId ? '답글 내용' : '댓글 내용'"
-            class="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 dark:focus:border-indigo-600 dark:focus:ring-indigo-600"
+            class="block w-full rounded-md border-stone-300 shadow-sm focus:border-orange-500 focus:ring-orange-500 dark:border-stone-700 dark:bg-stone-900 dark:text-stone-300 dark:focus:border-orange-600 dark:focus:ring-orange-600"
             required
         />
         <InputError :message="form.errors.content" />

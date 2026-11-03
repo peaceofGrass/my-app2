@@ -81,20 +81,36 @@ const destroy = () => {
             <div class="mx-auto max-w-4xl space-y-6 px-4 sm:px-6 lg:px-8">
                 <Link
                     :href="route('posts.index')"
-                    class="text-sm text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-100"
+                    class="group inline-flex items-center gap-2 rounded-full border border-sky-200 bg-white py-1.5 pl-1.5 pr-4 text-sm font-medium text-sky-700 shadow-sm transition hover:-translate-y-0.5 hover:border-sky-300 hover:bg-sky-50 hover:shadow focus:outline-none focus:ring-2 focus:ring-sky-500 focus:ring-offset-2 dark:border-sky-800 dark:bg-stone-800 dark:text-sky-300 dark:hover:bg-stone-700 dark:focus:ring-offset-stone-900"
                 >
-                    &larr; 목록으로
+                    <span
+                        class="flex h-7 w-7 items-center justify-center rounded-full bg-sky-100 text-sky-600 transition group-hover:-translate-x-0.5 group-hover:bg-sky-500 group-hover:text-white dark:bg-sky-900/60 dark:text-sky-300"
+                    >
+                        <svg
+                            viewBox="0 0 20 20"
+                            fill="currentColor"
+                            class="h-4 w-4"
+                            aria-hidden="true"
+                        >
+                            <path
+                                fill-rule="evenodd"
+                                d="M17 10a.75.75 0 0 1-.75.75H5.61l4.17 3.97a.75.75 0 1 1-1.04 1.08l-5.5-5.25a.75.75 0 0 1 0-1.08l5.5-5.25a.75.75 0 1 1 1.04 1.08L5.6 9.25h10.65A.75.75 0 0 1 17 10Z"
+                                clip-rule="evenodd"
+                            />
+                        </svg>
+                    </span>
+                    목록으로
                 </Link>
 
                 <article
-                    class="overflow-hidden rounded-lg bg-white shadow-sm dark:bg-gray-800"
+                    class="overflow-hidden rounded-lg bg-white shadow-sm dark:bg-stone-800"
                 >
                     <header
-                        class="border-b border-gray-100 p-6 sm:p-8 dark:border-gray-700"
+                        class="border-b border-orange-300 p-6 sm:p-8 dark:border-orange-800"
                     >
                         <div class="flex items-start justify-between gap-4">
                             <h1
-                                class="text-2xl font-bold text-gray-900 sm:text-3xl dark:text-gray-100"
+                                class="text-2xl font-bold text-stone-900 sm:text-3xl dark:text-stone-100"
                             >
                                 {{ post.title }}
                             </h1>
@@ -106,7 +122,7 @@ const destroy = () => {
                             </span>
                         </div>
                         <div
-                            class="mt-3 flex flex-wrap items-center justify-between gap-3 text-sm text-gray-500 dark:text-gray-400"
+                            class="mt-3 flex flex-wrap items-center justify-between gap-3 text-sm text-stone-500 dark:text-stone-400"
                         >
                             <span>
                                 {{ post.user.name }} ·
@@ -117,7 +133,7 @@ const destroy = () => {
                             <div v-if="isAuthor" class="flex gap-2">
                                 <Link
                                     :href="route('posts.edit', post.id)"
-                                    class="inline-flex items-center rounded-md border border-gray-300 bg-white px-4 py-2 text-xs font-semibold uppercase tracking-widest text-gray-700 shadow-sm transition duration-150 ease-in-out hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 dark:border-gray-500 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-gray-700 dark:focus:ring-offset-gray-800"
+                                    class="inline-flex items-center rounded-md border border-stone-300 bg-white px-4 py-2 text-xs font-semibold uppercase tracking-widest text-stone-700 shadow-sm transition duration-150 ease-in-out hover:bg-stone-50 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:ring-offset-2 dark:border-stone-500 dark:bg-stone-800 dark:text-stone-300 dark:hover:bg-stone-700 dark:focus:ring-offset-stone-800"
                                 >
                                     수정
                                 </Link>
@@ -129,7 +145,7 @@ const destroy = () => {
                     </header>
 
                     <div
-                        class="whitespace-pre-line p-6 leading-relaxed text-gray-800 sm:p-8 dark:text-gray-200"
+                        class="whitespace-pre-line p-6 leading-relaxed text-stone-800 sm:p-8 dark:text-stone-200"
                     >
                         {{ post.content }}
                     </div>
@@ -145,10 +161,10 @@ const destroy = () => {
 
                     <section
                         v-if="images.length"
-                        class="border-t border-gray-100 p-6 sm:p-8 dark:border-gray-700"
+                        class="border-t border-orange-300 p-6 sm:p-8 dark:border-orange-800"
                     >
                         <h2
-                            class="mb-4 text-sm font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400"
+                            class="mb-4 text-sm font-semibold uppercase tracking-wide text-stone-500 dark:text-stone-400"
                         >
                             이미지 ({{ images.length }})
                         </h2>
@@ -157,15 +173,15 @@ const destroy = () => {
 
                     <section
                         v-if="files.length"
-                        class="border-t border-gray-100 p-6 sm:p-8 dark:border-gray-700"
+                        class="border-t border-orange-300 p-6 sm:p-8 dark:border-orange-800"
                     >
                         <h2
-                            class="mb-4 text-sm font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400"
+                            class="mb-4 text-sm font-semibold uppercase tracking-wide text-stone-500 dark:text-stone-400"
                         >
                             첨부파일 ({{ files.length }})
                         </h2>
                         <ul
-                            class="divide-y divide-gray-100 rounded-md border border-gray-200 dark:divide-gray-700 dark:border-gray-700"
+                            class="divide-y divide-orange-200 rounded-md border border-orange-300 dark:divide-orange-900 dark:border-orange-800"
                         >
                             <li
                                 v-for="file in files"
@@ -174,13 +190,13 @@ const destroy = () => {
                             >
                                 <a
                                     :href="file.url"
-                                    class="truncate text-indigo-600 hover:underline dark:text-indigo-400"
+                                    class="truncate text-orange-600 hover:underline dark:text-orange-400"
                                     download
                                 >
                                     {{ file.original_name }}
                                 </a>
                                 <span
-                                    class="shrink-0 text-gray-500 dark:text-gray-400"
+                                    class="shrink-0 text-stone-500 dark:text-stone-400"
                                 >
                                     {{ formatFileSize(file.file_size) }}
                                 </span>
@@ -190,10 +206,10 @@ const destroy = () => {
                 </article>
 
                 <section
-                    class="space-y-6 rounded-lg bg-white p-6 shadow-sm sm:p-8 dark:bg-gray-800"
+                    class="space-y-6 rounded-lg bg-white p-6 shadow-sm sm:p-8 dark:bg-stone-800"
                 >
                     <h2
-                        class="text-lg font-semibold text-gray-900 dark:text-gray-100"
+                        class="text-lg font-semibold text-stone-900 dark:text-stone-100"
                     >
                         댓글 {{ commentCount }}
                     </h2>
@@ -204,12 +220,12 @@ const destroy = () => {
                     />
                     <p
                         v-else
-                        class="rounded-md bg-gray-50 p-4 text-sm text-gray-600 dark:bg-gray-900/50 dark:text-gray-400"
+                        class="rounded-md bg-stone-50 p-4 text-sm text-stone-600 dark:bg-stone-900/50 dark:text-stone-400"
                     >
                         댓글을 작성하려면
                         <Link
                             :href="route('login')"
-                            class="font-medium text-indigo-600 hover:underline dark:text-indigo-400"
+                            class="font-medium text-orange-600 hover:underline dark:text-orange-400"
                         >
                             로그인
                         </Link>
@@ -223,7 +239,10 @@ const destroy = () => {
                             :comment="comment"
                         />
                     </ul>
-                    <p v-else class="text-sm text-gray-500 dark:text-gray-400">
+                    <p
+                        v-else
+                        class="text-sm text-stone-500 dark:text-stone-400"
+                    >
                         아직 댓글이 없습니다.
                     </p>
                 </section>
