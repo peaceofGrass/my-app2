@@ -28,12 +28,6 @@ import { Link } from '@inertiajs/vue3';
 
                 <div class="flex items-center gap-4 text-sm font-medium">
                     <template v-if="$page.props.auth.user">
-                        <Link
-                            :href="route('dashboard')"
-                            class="text-stone-700 hover:text-stone-900 dark:text-stone-300 dark:hover:text-white"
-                        >
-                            Dashboard
-                        </Link>
                         <UserMenu />
                     </template>
                     <template v-else>

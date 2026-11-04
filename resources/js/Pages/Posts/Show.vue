@@ -81,24 +81,20 @@ const destroy = () => {
             <div class="mx-auto max-w-4xl space-y-6 px-4 sm:px-6 lg:px-8">
                 <Link
                     :href="route('posts.index')"
-                    class="group inline-flex items-center gap-2 rounded-full border border-sky-200 bg-white py-1.5 pl-1.5 pr-4 text-sm font-medium text-sky-700 shadow-sm transition hover:-translate-y-0.5 hover:border-sky-300 hover:bg-sky-50 hover:shadow focus:outline-none focus:ring-2 focus:ring-sky-500 focus:ring-offset-2 dark:border-sky-800 dark:bg-stone-800 dark:text-sky-300 dark:hover:bg-stone-700 dark:focus:ring-offset-stone-900"
+                    class="group inline-flex items-center gap-1.5 rounded-md text-sm font-medium text-stone-500 transition hover:text-orange-600 focus:outline-none focus-visible:ring-2 focus-visible:ring-orange-500 focus-visible:ring-offset-2 dark:text-stone-400 dark:hover:text-orange-400 dark:focus-visible:ring-offset-stone-900"
                 >
-                    <span
-                        class="flex h-7 w-7 items-center justify-center rounded-full bg-sky-100 text-sky-600 transition group-hover:-translate-x-0.5 group-hover:bg-sky-500 group-hover:text-white dark:bg-sky-900/60 dark:text-sky-300"
+                    <svg
+                        viewBox="0 0 20 20"
+                        fill="currentColor"
+                        class="h-4 w-4 transition group-hover:-translate-x-0.5"
+                        aria-hidden="true"
                     >
-                        <svg
-                            viewBox="0 0 20 20"
-                            fill="currentColor"
-                            class="h-4 w-4"
-                            aria-hidden="true"
-                        >
-                            <path
-                                fill-rule="evenodd"
-                                d="M17 10a.75.75 0 0 1-.75.75H5.61l4.17 3.97a.75.75 0 1 1-1.04 1.08l-5.5-5.25a.75.75 0 0 1 0-1.08l5.5-5.25a.75.75 0 1 1 1.04 1.08L5.6 9.25h10.65A.75.75 0 0 1 17 10Z"
-                                clip-rule="evenodd"
-                            />
-                        </svg>
-                    </span>
+                        <path
+                            fill-rule="evenodd"
+                            d="M17 10a.75.75 0 0 1-.75.75H5.61l4.17 3.97a.75.75 0 1 1-1.04 1.08l-5.5-5.25a.75.75 0 0 1 0-1.08l5.5-5.25a.75.75 0 1 1 1.04 1.08L5.6 9.25h10.65A.75.75 0 0 1 17 10Z"
+                            clip-rule="evenodd"
+                        />
+                    </svg>
                     목록으로
                 </Link>
 
