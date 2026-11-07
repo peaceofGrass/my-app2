@@ -6,6 +6,7 @@ use App\Http\Requests\PostRequest;
 use App\Models\Attachment;
 use App\Models\Comment;
 use App\Models\Post;
+use App\Models\PostImage;
 use App\Models\Reaction;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Builder;
@@ -31,7 +32,8 @@ class PostController extends Controller
             ->latest()
             ->latest('id')
             ->paginate(10)
-            ->withQueryString();
+            ->withQueryString()
+            ->through(fn (Post $post) => $post->append('excerpt')->makeHidden('content'));
 
         return Inertia::render('Posts/Index', [
             'posts' => $posts,
@@ -47,7 +49,7 @@ class PostController extends Controller
     }
 
     /**
-     * Store a newly created post and its uploaded images for the authenticated user.
+     * Store a newly created post, its gallery images, and its editor images for the authenticated user.
      */
     public function store(PostRequest $request): RedirectResponse
     {
@@ -57,6 +59,7 @@ class PostController extends Controller
             );
 
             $post->storeAttachments($request->file('attachments', []));
+            $post->syncImages();
 
             return $post;
         });
@@ -94,7 +97,7 @@ class PostController extends Controller
     }
 
     /**
-     * Update the post, removing selected images and storing new ones.
+     * Update the post, removing selected gallery images, storing new ones, and syncing editor images.
      * Authorization is handled by PostRequest.
      */
     public function update(PostRequest $request, Post $post): RedirectResponse
@@ -107,6 +110,7 @@ class PostController extends Controller
             );
 
             $post->storeAttachments($request->file('attachments', []));
+            $post->syncImages();
         });
 
         return Redirect::route('posts.show', $post);
@@ -132,6 +136,9 @@ class PostController extends Controller
                 ->whereMorphedTo('reactable', $post)
                 ->orWhereHasMorph('reactable', Comment::class, fn (Builder $query) => $query->whereBelongsTo($post))
                 ->delete();
+
+            // The foreign key cascade removes the rows but not the files, so purge editor images first.
+            PostImage::purge($post->images()->get());
 
             $post->delete();
         });

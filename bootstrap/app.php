@@ -20,7 +20,9 @@ return Application::configure(basePath: dirname(__DIR__))
         //
     })
     ->withExceptions(function (Exceptions $exceptions): void {
+        // The editor's image upload is called with axios, so it needs JSON errors (422/401/429)
+        // instead of the redirect a web route gets.
         $exceptions->shouldRenderJsonWhen(
-            fn (Request $request) => $request->is('api/*'),
+            fn (Request $request) => $request->is('api/*') || $request->routeIs('post-images.*'),
         );
     })->create();

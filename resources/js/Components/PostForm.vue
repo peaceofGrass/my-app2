@@ -4,6 +4,7 @@ import ImageInput from '@/Components/ImageInput.vue';
 import InputError from '@/Components/InputError.vue';
 import InputLabel from '@/Components/InputLabel.vue';
 import PrimaryButton from '@/Components/PrimaryButton.vue';
+import RichTextEditor from '@/Components/RichTextEditor.vue';
 import TextInput from '@/Components/TextInput.vue';
 import { Link, useForm } from '@inertiajs/vue3';
 import { computed } from 'vue';
@@ -71,14 +72,8 @@ const submit = () => {
         </div>
 
         <div>
-            <InputLabel for="content" value="본문" />
-            <textarea
-                id="content"
-                v-model="form.content"
-                rows="14"
-                class="mt-1 block w-full rounded-md border-stone-300 shadow-sm focus:border-orange-500 focus:ring-orange-500 dark:border-stone-700 dark:bg-stone-900 dark:text-stone-300 dark:focus:border-orange-600 dark:focus:ring-orange-600"
-                required
-            />
+            <InputLabel value="본문" />
+            <RichTextEditor v-model="form.content" class="mt-1" />
             <InputError class="mt-2" :message="form.errors.content" />
         </div>
 

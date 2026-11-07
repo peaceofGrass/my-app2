@@ -21,7 +21,7 @@ class PostFactory extends Factory
         return [
             'user_id' => User::factory(),
             'title' => fake()->sentence(),
-            'content' => fake()->paragraphs(3, true),
+            'content' => collect(fake()->paragraphs(3))->map(fn (string $paragraph) => "<p>{$paragraph}</p>")->implode(''),
             'is_published' => fake()->boolean(80),
         ];
     }

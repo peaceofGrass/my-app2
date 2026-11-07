@@ -140,11 +140,11 @@ const destroy = () => {
                         </div>
                     </header>
 
+                    <!-- Sanitized on the server (PostRequest / PostContent) before it is stored. -->
                     <div
-                        class="whitespace-pre-line p-6 leading-relaxed text-stone-800 sm:p-8 dark:text-stone-200"
-                    >
-                        {{ post.content }}
-                    </div>
+                        class="prose prose-stone max-w-none p-6 dark:prose-invert prose-a:text-orange-600 prose-img:rounded-md sm:p-8 dark:prose-a:text-orange-400"
+                        v-html="post.content"
+                    />
 
                     <div class="px-6 pb-6 sm:px-8 sm:pb-8">
                         <ReactionButtons

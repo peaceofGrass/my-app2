@@ -54,4 +54,14 @@ class User extends Authenticatable
     {
         return $this->hasMany(Reaction::class);
     }
+
+    /**
+     * Images the user uploaded from the post body editor.
+     *
+     * @return HasMany<PostImage, $this>
+     */
+    public function postImages(): HasMany
+    {
+        return $this->hasMany(PostImage::class);
+    }
 }

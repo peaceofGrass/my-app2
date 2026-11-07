@@ -113,7 +113,7 @@ const formatDate = (value) =>
                             <p
                                 class="mt-2 line-clamp-3 flex-1 text-sm text-stone-600 dark:text-stone-400"
                             >
-                                {{ post.content }}
+                                {{ post.excerpt }}
                             </p>
 
                             <div

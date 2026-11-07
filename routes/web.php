@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\CommentController;
+use App\Http\Controllers\PostImageController;
 use App\Http\Controllers\PostController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\ReactionController;
@@ -28,6 +29,10 @@ Route::middleware('auth')->group(function () {
 
     Route::resource('posts', PostController::class)->only(['create', 'store', 'edit', 'update', 'destroy']);
     Route::resource('posts.comments', CommentController::class)->shallow()->only(['store', 'update', 'destroy']);
+
+    Route::post('/post-images', [PostImageController::class, 'store'])
+        ->middleware('throttle:30,1')
+        ->name('post-images.store');
 
     Route::post('/posts/{post}/reaction', [ReactionController::class, 'post'])->name('posts.reaction');
     Route::post('/comments/{comment}/reaction', [ReactionController::class, 'comment'])->name('comments.reaction');
