@@ -1,4 +1,14 @@
 <script setup>
+import EditorMenu from '@/Components/EditorMenu.vue';
+import {
+    COLORS,
+    FONTS,
+    FormattedText,
+    HIGHLIGHTS,
+    PREFIXES,
+    PresetHighlight,
+    SIZES,
+} from '@/editorFormatting';
 import Image from '@tiptap/extension-image';
 import Placeholder from '@tiptap/extension-placeholder';
 import StarterKit from '@tiptap/starter-kit';
@@ -130,12 +140,14 @@ const editor = useEditor({
             },
         }),
         EditorImage,
+        FormattedText,
+        PresetHighlight,
         Placeholder.configure({ placeholder: props.placeholder }),
     ],
     editorProps: {
         attributes: {
             'aria-label': props.label,
-            class: 'prose prose-stone min-h-[20rem] max-w-none px-4 py-3 focus:outline-none dark:prose-invert prose-a:text-orange-600 prose-img:rounded-md dark:prose-a:text-orange-400',
+            class: 'prose prose-stone min-h-full max-w-none px-4 py-3 focus:outline-none dark:prose-invert prose-a:text-orange-600 prose-img:rounded-md dark:prose-a:text-orange-400',
         },
         handlePaste: (view, event) => takeImages(event.clipboardData?.files),
         handleDrop: (view, event, slice, moved) =>
@@ -172,6 +184,56 @@ const setLink = () => {
         chain.setLink({ href: url.trim() }).run();
     }
 };
+
+const fontOptions = [{ value: null, label: '기본 글꼴' }, ...FONTS];
+const sizeOptions = [
+    SIZES[0],
+    { value: null, label: '보통' },
+    ...SIZES.slice(1),
+];
+
+const labelOf = (options, value) =>
+    options.find((option) => option.value === (value ?? null))?.label;
+
+const presetClass = (prefix, value) => (value ? `${prefix}${value}` : '');
+
+// Font, size, and color are attributes of the one textStyle mark.
+const textStyle = (name) =>
+    editor.value?.getAttributes('textStyle')[name] ?? null;
+
+const setTextStyle = (name, value) => {
+    const chain = editor.value
+        .chain()
+        .focus()
+        .setMark('textStyle', { [name]: value });
+
+    (value ? chain : chain.removeEmptyTextStyle()).run();
+};
+
+const highlight = () =>
+    editor.value?.isActive('highlight')
+        ? editor.value.getAttributes('highlight').color
+        : null;
+
+const setHighlight = (value) => {
+    const chain = editor.value.chain().focus();
+
+    (value
+        ? chain.setHighlight({ color: value })
+        : chain.unsetHighlight()
+    ).run();
+};
+
+const optionClass = (active) => [
+    'flex w-full items-center rounded px-3 py-1.5 text-left text-sm text-stone-700 transition hover:bg-stone-100 focus:outline-none focus-visible:bg-stone-100 dark:text-stone-200 dark:hover:bg-stone-700 dark:focus-visible:bg-stone-700',
+    active &&
+        'bg-orange-50 text-orange-700 dark:bg-orange-900/40 dark:text-orange-300',
+];
+
+const swatchClass = (active) => [
+    'flex h-8 w-8 items-center justify-center rounded border transition hover:bg-stone-100 focus:outline-none focus-visible:ring-2 focus-visible:ring-orange-500 dark:hover:bg-stone-700',
+    active ? 'border-orange-500 dark:border-orange-400' : 'border-transparent',
+];
 
 const pickImages = (event) => {
     uploadAll(event.target.files);
@@ -296,14 +358,190 @@ const tools = computed(() => {
 <template>
     <div>
         <div
-            class="overflow-hidden rounded-md border border-stone-300 bg-white shadow-sm focus-within:border-orange-500 focus-within:ring-1 focus-within:ring-orange-500 dark:border-stone-700 dark:bg-stone-900 dark:focus-within:border-orange-600 dark:focus-within:ring-orange-600"
+            class="rounded-md border border-stone-300 bg-white shadow-sm focus-within:border-orange-500 focus-within:ring-1 focus-within:ring-orange-500 dark:border-stone-700 dark:bg-stone-900 dark:focus-within:border-orange-600 dark:focus-within:ring-orange-600"
         >
             <div
                 v-if="editor"
                 role="toolbar"
                 :aria-label="`${label} 서식`"
-                class="flex flex-wrap items-center gap-1 border-b border-stone-200 bg-stone-50 px-2 py-1.5 dark:border-stone-700 dark:bg-stone-800"
+                class="flex flex-wrap items-center gap-1 rounded-t-md border-b border-stone-200 bg-stone-50 px-2 py-1.5 dark:border-stone-700 dark:bg-stone-800"
             >
+                <EditorMenu label="글꼴">
+                    <template #trigger>
+                        <span class="w-24 truncate text-left">
+                            {{ labelOf(fontOptions, textStyle('font')) }}
+                        </span>
+                    </template>
+                    <template #default="{ close }">
+                        <button
+                            v-for="option in fontOptions"
+                            :key="option.label"
+                            type="button"
+                            :aria-pressed="textStyle('font') === option.value"
+                            :class="[
+                                optionClass(textStyle('font') === option.value),
+                                presetClass(PREFIXES.font, option.value),
+                            ]"
+                            @click="
+                                setTextStyle('font', option.value);
+                                close();
+                            "
+                        >
+                            {{ option.label }}
+                        </button>
+                    </template>
+                </EditorMenu>
+
+                <EditorMenu label="글자 크기">
+                    <template #trigger>
+                        <span class="w-14 text-left">
+                            {{ labelOf(sizeOptions, textStyle('size')) }}
+                        </span>
+                    </template>
+                    <template #default="{ close }">
+                        <button
+                            v-for="option in sizeOptions"
+                            :key="option.label"
+                            type="button"
+                            :aria-pressed="textStyle('size') === option.value"
+                            :class="
+                                optionClass(textStyle('size') === option.value)
+                            "
+                            @click="
+                                setTextStyle('size', option.value);
+                                close();
+                            "
+                        >
+                            <span
+                                :class="
+                                    presetClass(PREFIXES.size, option.value)
+                                "
+                            >
+                                {{ option.label }}
+                            </span>
+                        </button>
+                    </template>
+                </EditorMenu>
+
+                <EditorMenu label="글자색">
+                    <template #trigger>
+                        <span
+                            class="border-b-[3px] border-current px-0.5 font-bold leading-tight"
+                            :class="
+                                presetClass(PREFIXES.color, textStyle('color'))
+                            "
+                        >
+                            가
+                        </span>
+                    </template>
+                    <template #default="{ close }">
+                        <button
+                            type="button"
+                            :aria-pressed="!textStyle('color')"
+                            :class="optionClass(!textStyle('color'))"
+                            @click="
+                                setTextStyle('color', null);
+                                close();
+                            "
+                        >
+                            기본 색
+                        </button>
+                        <div class="grid grid-cols-4 gap-1 p-1">
+                            <button
+                                v-for="color in COLORS"
+                                :key="color.value"
+                                type="button"
+                                :title="color.label"
+                                :aria-label="color.label"
+                                :aria-pressed="
+                                    textStyle('color') === color.value
+                                "
+                                :class="
+                                    swatchClass(
+                                        textStyle('color') === color.value,
+                                    )
+                                "
+                                @click="
+                                    setTextStyle('color', color.value);
+                                    close();
+                                "
+                            >
+                                <span
+                                    class="font-bold"
+                                    :class="
+                                        presetClass(PREFIXES.color, color.value)
+                                    "
+                                >
+                                    가
+                                </span>
+                            </button>
+                        </div>
+                    </template>
+                </EditorMenu>
+
+                <EditorMenu label="형광펜">
+                    <template #trigger>
+                        <mark
+                            class="rounded-sm px-1 font-bold"
+                            :class="
+                                presetClass(
+                                    PREFIXES.highlight,
+                                    highlight() ?? 'yellow',
+                                )
+                            "
+                        >
+                            가
+                        </mark>
+                    </template>
+                    <template #default="{ close }">
+                        <button
+                            type="button"
+                            :aria-pressed="!highlight()"
+                            :class="optionClass(!highlight())"
+                            @click="
+                                setHighlight(null);
+                                close();
+                            "
+                        >
+                            없음
+                        </button>
+                        <div class="grid grid-cols-5 gap-1 p-1">
+                            <button
+                                v-for="color in HIGHLIGHTS"
+                                :key="color.value"
+                                type="button"
+                                :title="color.label"
+                                :aria-label="`형광펜 ${color.label}`"
+                                :aria-pressed="highlight() === color.value"
+                                :class="
+                                    swatchClass(highlight() === color.value)
+                                "
+                                @click="
+                                    setHighlight(color.value);
+                                    close();
+                                "
+                            >
+                                <mark
+                                    class="rounded-sm px-1 font-bold"
+                                    :class="
+                                        presetClass(
+                                            PREFIXES.highlight,
+                                            color.value,
+                                        )
+                                    "
+                                >
+                                    가
+                                </mark>
+                            </button>
+                        </div>
+                    </template>
+                </EditorMenu>
+
+                <span
+                    class="mx-1 h-5 w-px bg-stone-300 dark:bg-stone-600"
+                    aria-hidden="true"
+                />
+
                 <template v-for="(group, index) in tools" :key="index">
                     <span
                         v-if="index > 0"
@@ -338,7 +576,10 @@ const tools = computed(() => {
                 </span>
             </div>
 
-            <EditorContent :editor="editor" />
+            <!-- Fixed height: long bodies scroll inside the editor, the toolbar stays in view. -->
+            <div class="h-80 overflow-y-auto rounded-b-md sm:h-[26.5rem]">
+                <EditorContent :editor="editor" class="h-full" />
+            </div>
         </div>
 
         <input

@@ -21,6 +21,22 @@ class PostContent
     public const MAX_LENGTH = 200_000;
 
     /**
+     * The formatting classes the editor's presets produce, per element (styled in resources/css/app.css).
+     * Keep in sync with resources/js/editorFormatting.js; any other class is stripped.
+     */
+    public const FORMAT_CLASSES = [
+        'span' => [
+            'rt-font-gothic', 'rt-font-serif', 'rt-font-round', 'rt-font-pen', 'rt-font-display',
+            'rt-size-sm', 'rt-size-lg', 'rt-size-xl',
+            'rt-color-gray', 'rt-color-red', 'rt-color-orange', 'rt-color-yellow',
+            'rt-color-green', 'rt-color-blue', 'rt-color-purple', 'rt-color-pink',
+        ],
+        'mark' => [
+            'rt-bg-yellow', 'rt-bg-green', 'rt-bg-blue', 'rt-bg-pink', 'rt-bg-purple',
+        ],
+    ];
+
+    /**
      * Strip everything the editor cannot produce, so the HTML is safe to render with v-html.
      */
     public static function sanitize(string $html): string
@@ -144,6 +160,10 @@ class PostContent
             ->allowElement('hr')
             ->allowElement('a', ['href'])
             ->allowElement('img', ['src', 'alt', 'data-image-id'])
+            // Text formatting is limited to preset classes; inline styles are never kept.
+            ->allowElement('span', ['class'])
+            ->allowElement('mark', ['class'])
+            ->withAttributeSanitizer(new FormatClassSanitizer)
             ->allowLinkSchemes(['http', 'https', 'mailto'])
             ->allowMediaSchemes(['http', 'https'])
             ->allowRelativeLinks()

@@ -155,6 +155,19 @@ test('post bodies are sanitized before they are stored', function () {
         ->toBe('<p>Hi <a rel="noopener noreferrer nofollow" target="_blank">x</a></p>');
 });
 
+test('preset text formatting is stored but inline styles are not', function () {
+    $user = User::factory()->create();
+
+    $this->actingAs($user)->post('/posts', [
+        'title' => 'Hello',
+        'content' => '<p><span class="rt-font-pen rt-color-blue" style="position:fixed">Hi</span> <mark class="rt-bg-yellow" style="background:url(x)">there</mark></p>',
+        'is_published' => true,
+    ])->assertSessionHasNoErrors();
+
+    expect($user->posts()->sole()->content)
+        ->toBe('<p><span class="rt-font-pen rt-color-blue">Hi</span> <mark class="rt-bg-yellow">there</mark></p>');
+});
+
 test('an empty editor body is rejected', function (string $content) {
     $this->actingAs(User::factory()->create())
         ->post('/posts', ['title' => 'Hello', 'content' => $content, 'is_published' => true])

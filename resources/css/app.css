@@ -7,3 +7,76 @@
     @apply pointer-events-none float-left h-0 text-stone-400 dark:text-stone-500;
     content: attr(data-placeholder);
 }
+
+/*
+ * Editor formatting presets (resources/js/editorFormatting.js). Post bodies keep only these
+ * classes (App\Support\PostContent::FORMAT_CLASSES). The fonts are loaded in app.blade.php.
+ */
+.rt-font-gothic {
+    font-family: 'Pretendard Variable', Pretendard, sans-serif;
+}
+.rt-font-serif {
+    font-family: 'Noto Serif KR', serif;
+}
+.rt-font-round {
+    font-family: 'Gowun Dodum', sans-serif;
+}
+.rt-font-pen {
+    font-family: 'Nanum Pen Script', cursive;
+}
+.rt-font-display {
+    font-family: 'Black Han Sans', sans-serif;
+}
+
+.rt-size-sm {
+    font-size: 0.875em;
+}
+.rt-size-lg {
+    font-size: 1.25em;
+}
+.rt-size-xl {
+    font-size: 1.5em;
+}
+
+.rt-color-gray {
+    @apply text-stone-500 dark:text-stone-400;
+}
+.rt-color-red {
+    @apply text-red-600 dark:text-red-400;
+}
+.rt-color-orange {
+    @apply text-orange-600 dark:text-orange-400;
+}
+.rt-color-yellow {
+    @apply text-amber-500 dark:text-amber-300;
+}
+.rt-color-green {
+    @apply text-green-600 dark:text-green-400;
+}
+.rt-color-blue {
+    @apply text-blue-600 dark:text-blue-400;
+}
+.rt-color-purple {
+    @apply text-purple-600 dark:text-purple-400;
+}
+.rt-color-pink {
+    @apply text-pink-600 dark:text-pink-400;
+}
+
+/* A bare <mark> is yellow, like the editor's default highlight. */
+mark,
+mark.rt-bg-yellow {
+    @apply rounded-sm bg-yellow-200 text-inherit [box-decoration-break:clone] dark:bg-yellow-400/30;
+}
+mark.rt-bg-green {
+    @apply bg-green-200 dark:bg-green-400/30;
+}
+mark.rt-bg-blue {
+    @apply bg-sky-200 dark:bg-sky-400/30;
+}
+mark.rt-bg-pink {
+    @apply bg-pink-200 dark:bg-pink-400/30;
+}
+mark.rt-bg-purple {
+    @apply bg-purple-200 dark:bg-purple-400/30;
+}
