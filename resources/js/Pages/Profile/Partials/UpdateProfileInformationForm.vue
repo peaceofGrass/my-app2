@@ -26,11 +26,11 @@ const form = useForm({
     <section>
         <header>
             <h2 class="text-lg font-medium text-stone-900 dark:text-stone-100">
-                Profile Information
+                프로필 정보
             </h2>
 
             <p class="mt-1 text-sm text-stone-600 dark:text-stone-400">
-                Update your account's profile information and email address.
+                계정의 프로필 정보와 이메일 주소를 수정할 수 있습니다.
             </p>
         </header>
 
@@ -39,7 +39,7 @@ const form = useForm({
             class="mt-6 space-y-6"
         >
             <div>
-                <InputLabel for="name" value="Name" />
+                <InputLabel for="name" value="이름" />
 
                 <TextInput
                     id="name"
@@ -55,7 +55,7 @@ const form = useForm({
             </div>
 
             <div>
-                <InputLabel for="email" value="Email" />
+                <InputLabel for="email" value="이메일" />
 
                 <TextInput
                     id="email"
@@ -71,14 +71,14 @@ const form = useForm({
 
             <div v-if="mustVerifyEmail && user.email_verified_at === null">
                 <p class="mt-2 text-sm text-stone-800 dark:text-stone-200">
-                    Your email address is unverified.
+                    이메일 주소가 아직 인증되지 않았습니다.
                     <Link
                         :href="route('verification.send')"
                         method="post"
                         as="button"
                         class="rounded-md text-sm text-stone-600 underline hover:text-stone-900 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:ring-offset-2 dark:text-stone-400 dark:hover:text-stone-100 dark:focus:ring-offset-stone-800"
                     >
-                        Click here to re-send the verification email.
+                        인증 메일을 다시 받으려면 여기를 클릭하세요.
                     </Link>
                 </p>
 
@@ -86,12 +86,12 @@ const form = useForm({
                     v-show="status === 'verification-link-sent'"
                     class="mt-2 text-sm font-medium text-green-600 dark:text-green-400"
                 >
-                    A new verification link has been sent to your email address.
+                    새 인증 링크를 이메일로 보냈습니다.
                 </div>
             </div>
 
             <div class="flex items-center gap-4">
-                <PrimaryButton :disabled="form.processing">Save</PrimaryButton>
+                <PrimaryButton :disabled="form.processing">저장</PrimaryButton>
 
                 <Transition
                     enter-active-class="transition ease-in-out"
@@ -103,7 +103,7 @@ const form = useForm({
                         v-if="form.recentlySuccessful"
                         class="text-sm text-stone-600 dark:text-stone-400"
                     >
-                        Saved.
+                        저장되었습니다.
                     </p>
                 </Transition>
             </div>

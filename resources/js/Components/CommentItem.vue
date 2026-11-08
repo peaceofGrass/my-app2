@@ -222,10 +222,7 @@ const formatDate = (value) =>
             />
         </div>
 
-        <ul
-            v-if="replies.length"
-            class="ms-4 mt-3 space-y-3 border-s-2 border-orange-300 ps-4 dark:border-orange-800"
-        >
+        <ul v-if="replies.length" class="soft-thread ms-4 mt-3 space-y-3 ps-4">
             <CommentItem
                 v-for="reply in replies"
                 :key="reply.comment.id"

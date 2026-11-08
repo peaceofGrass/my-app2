@@ -111,9 +111,7 @@ const submit = () => {
             {{ form.progress.percentage }}%
         </progress>
 
-        <div
-            class="flex items-center justify-end gap-3 border-t border-orange-200 pt-6 dark:border-orange-900"
-        >
+        <div class="soft-divider-t flex items-center justify-end gap-3 pt-6">
             <Link
                 :href="
                     post ? route('posts.show', post.id) : route('posts.index')

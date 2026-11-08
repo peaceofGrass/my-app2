@@ -100,9 +100,7 @@ const destroy = () => {
                 <article
                     class="overflow-hidden rounded-lg bg-white shadow-sm dark:bg-stone-800"
                 >
-                    <header
-                        class="border-b border-orange-300 p-6 sm:p-8 dark:border-orange-800"
-                    >
+                    <header class="soft-divider-b p-6 sm:p-8">
                         <div class="flex items-start justify-between gap-4">
                             <h1
                                 class="text-2xl font-bold text-stone-900 sm:text-3xl dark:text-stone-100"
@@ -194,7 +192,7 @@ const destroy = () => {
 
                     <section
                         v-if="images.length"
-                        class="border-t border-orange-300 p-6 sm:p-8 dark:border-orange-800"
+                        class="soft-divider-t p-6 sm:p-8"
                     >
                         <h2
                             class="mb-4 text-sm font-semibold uppercase tracking-wide text-stone-500 dark:text-stone-400"
@@ -206,7 +204,7 @@ const destroy = () => {
 
                     <section
                         v-if="files.length"
-                        class="border-t border-orange-300 p-6 sm:p-8 dark:border-orange-800"
+                        class="soft-divider-t p-6 sm:p-8"
                     >
                         <h2
                             class="mb-4 text-sm font-semibold uppercase tracking-wide text-stone-500 dark:text-stone-400"
@@ -214,7 +212,7 @@ const destroy = () => {
                             첨부파일 ({{ files.length }})
                         </h2>
                         <ul
-                            class="divide-y divide-orange-200 rounded-md border border-orange-300 dark:divide-orange-900 dark:border-orange-800"
+                            class="divide-y divide-stone-200/70 rounded-lg bg-stone-50 dark:divide-stone-700/60 dark:bg-stone-900/40"
                         >
                             <li
                                 v-for="file in files"

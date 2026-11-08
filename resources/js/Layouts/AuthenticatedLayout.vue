@@ -10,10 +10,8 @@ const showingNavigationDropdown = ref(false);
 
 <template>
     <div>
-        <div class="min-h-screen bg-white dark:bg-stone-900">
-            <nav
-                class="border-b border-orange-300 bg-white dark:border-orange-800 dark:bg-stone-800"
-            >
+        <div class="min-h-screen bg-stone-50 dark:bg-stone-900">
+            <nav class="bg-white dark:bg-stone-800">
                 <!-- Primary Navigation Menu -->
                 <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
                     <div class="flex h-16 justify-between">
@@ -87,9 +85,7 @@ const showingNavigationDropdown = ref(false);
                     class="sm:hidden"
                 >
                     <!-- Responsive Settings Options -->
-                    <div
-                        class="border-t border-orange-300 pb-1 pt-4 dark:border-orange-800"
-                    >
+                    <div class="soft-divider-t pb-1 pt-4">
                         <div class="px-4">
                             <div
                                 class="text-base font-medium text-stone-800 dark:text-stone-200"
@@ -103,14 +99,14 @@ const showingNavigationDropdown = ref(false);
 
                         <div class="mt-3 space-y-1">
                             <ResponsiveNavLink :href="route('profile.edit')">
-                                Profile
+                                프로필
                             </ResponsiveNavLink>
                             <ResponsiveNavLink
                                 :href="route('logout')"
                                 method="post"
                                 as="button"
                             >
-                                Log Out
+                                로그아웃
                             </ResponsiveNavLink>
                         </div>
                     </div>
@@ -119,7 +115,7 @@ const showingNavigationDropdown = ref(false);
 
             <!-- Page Heading -->
             <header
-                class="border-b border-orange-300 bg-white dark:border-orange-800 dark:bg-stone-800"
+                class="soft-divider-t bg-white dark:bg-stone-800"
                 v-if="$slots.header"
             >
                 <div class="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
@@ -128,7 +124,7 @@ const showingNavigationDropdown = ref(false);
             </header>
 
             <!-- Page Content -->
-            <main>
+            <main class="page-fade">
                 <slot />
             </main>
         </div>

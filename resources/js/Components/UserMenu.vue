@@ -32,9 +32,9 @@ import DropdownLink from '@/Components/DropdownLink.vue';
         </template>
 
         <template #content>
-            <DropdownLink :href="route('profile.edit')"> Profile </DropdownLink>
+            <DropdownLink :href="route('profile.edit')"> 프로필 </DropdownLink>
             <DropdownLink :href="route('logout')" method="post" as="button">
-                Log Out
+                로그아웃
             </DropdownLink>
         </template>
     </Dropdown>

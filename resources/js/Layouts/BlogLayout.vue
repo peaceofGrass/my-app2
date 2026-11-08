@@ -6,10 +6,8 @@ import { Link } from '@inertiajs/vue3';
 </script>
 
 <template>
-    <div class="min-h-screen bg-white dark:bg-stone-900">
-        <nav
-            class="border-b border-orange-300 bg-white dark:border-orange-800 dark:bg-stone-800"
-        >
+    <div class="min-h-screen bg-stone-50 dark:bg-stone-900">
+        <nav class="bg-white dark:bg-stone-800">
             <div
                 class="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8"
             >
@@ -53,7 +51,7 @@ import { Link } from '@inertiajs/vue3';
         </nav>
 
         <header
-            class="border-b border-orange-300 bg-white dark:border-orange-800 dark:bg-stone-800"
+            class="soft-divider-t bg-white dark:bg-stone-800"
             v-if="$slots.header"
         >
             <div class="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
@@ -61,7 +59,7 @@ import { Link } from '@inertiajs/vue3';
             </div>
         </header>
 
-        <main>
+        <main class="page-fade">
             <slot />
         </main>
     </div>

@@ -42,36 +42,35 @@ const closeModal = () => {
     <section class="space-y-6">
         <header>
             <h2 class="text-lg font-medium text-stone-900 dark:text-stone-100">
-                Delete Account
+                계정 삭제
             </h2>
 
             <p class="mt-1 text-sm text-stone-600 dark:text-stone-400">
-                Once your account is deleted, all of its resources and data will
-                be permanently deleted. Before deleting your account, please
-                download any data or information that you wish to retain.
+                계정을 삭제하면 모든 리소스와 데이터가 영구적으로 삭제됩니다.
+                삭제하기 전에 보관하려는 데이터나 정보를 먼저 내려받아 주세요.
             </p>
         </header>
 
-        <DangerButton @click="confirmUserDeletion">Delete Account</DangerButton>
+        <DangerButton @click="confirmUserDeletion">계정 삭제</DangerButton>
 
         <Modal :show="confirmingUserDeletion" @close="closeModal">
             <div class="p-6">
                 <h2
                     class="text-lg font-medium text-stone-900 dark:text-stone-100"
                 >
-                    Are you sure you want to delete your account?
+                    정말 계정을 삭제하시겠습니까?
                 </h2>
 
                 <p class="mt-1 text-sm text-stone-600 dark:text-stone-400">
-                    Once your account is deleted, all of its resources and data
-                    will be permanently deleted. Please enter your password to
-                    confirm you would like to permanently delete your account.
+                    계정을 삭제하면 모든 리소스와 데이터가 영구적으로
+                    삭제됩니다. 계정을 영구적으로 삭제하려면 비밀번호를 입력해
+                    주세요.
                 </p>
 
                 <div class="mt-6">
                     <InputLabel
                         for="password"
-                        value="Password"
+                        value="비밀번호"
                         class="sr-only"
                     />
 
@@ -81,7 +80,7 @@ const closeModal = () => {
                         v-model="form.password"
                         type="password"
                         class="mt-1 block w-3/4"
-                        placeholder="Password"
+                        placeholder="비밀번호"
                         @keyup.enter="deleteUser"
                     />
 
@@ -90,7 +89,7 @@ const closeModal = () => {
 
                 <div class="mt-6 flex justify-end">
                     <SecondaryButton @click="closeModal">
-                        Cancel
+                        취소
                     </SecondaryButton>
 
                     <DangerButton
@@ -99,7 +98,7 @@ const closeModal = () => {
                         :disabled="form.processing"
                         @click="deleteUser"
                     >
-                        Delete Account
+                        계정 삭제
                     </DangerButton>
                 </div>
             </div>

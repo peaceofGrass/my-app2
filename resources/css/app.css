@@ -2,6 +2,55 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Soft section separators: lines that fade out instead of ending hard. */
+:root {
+    --soft-line: theme('colors.stone.200');
+    --soft-line-accent: theme('colors.orange.200');
+    --page-fade: rgb(251 146 60 / 0.09);
+}
+@media (prefers-color-scheme: dark) {
+    :root {
+        --soft-line: theme('colors.stone.700');
+        --soft-line-accent: theme('colors.orange.900');
+        --page-fade: rgb(0 0 0 / 0.22);
+    }
+}
+.soft-divider-t,
+.soft-divider-b {
+    background-image: linear-gradient(
+        to right,
+        transparent,
+        var(--soft-line) 20%,
+        var(--soft-line-accent) 50%,
+        var(--soft-line) 80%,
+        transparent
+    );
+    background-repeat: no-repeat;
+    background-size: 100% 1px;
+}
+.soft-divider-t {
+    background-position: top;
+}
+.soft-divider-b {
+    background-position: bottom;
+}
+.soft-thread {
+    background-image: linear-gradient(
+        to bottom,
+        var(--soft-line-accent),
+        var(--soft-line) 60%,
+        transparent
+    );
+    background-repeat: no-repeat;
+    background-size: 2px 100%;
+}
+/* The page content appears to sit just beneath the header. */
+.page-fade {
+    background-image: linear-gradient(to bottom, var(--page-fade), transparent);
+    background-repeat: no-repeat;
+    background-size: 100% 3rem;
+}
+
 /* Tiptap placeholder shown while the editor is empty. */
 .tiptap p.is-editor-empty:first-child::before {
     @apply pointer-events-none float-left h-0 text-stone-400 dark:text-stone-500;
