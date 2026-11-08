@@ -1,8 +1,7 @@
 <script setup>
+import CommentButton from '@/Components/CommentButton.vue';
 import ImageInput from '@/Components/ImageInput.vue';
 import InputError from '@/Components/InputError.vue';
-import PrimaryButton from '@/Components/PrimaryButton.vue';
-import SecondaryButton from '@/Components/SecondaryButton.vue';
 import { useForm } from '@inertiajs/vue3';
 import { computed } from 'vue';
 
@@ -64,13 +63,23 @@ const submit = () => {
 
         <ImageInput v-model="form.attachments" :errors="attachmentErrors" />
 
-        <div class="flex items-center gap-3">
-            <PrimaryButton :disabled="form.processing">
-                {{ parentId ? '답글 등록' : '댓글 등록' }}
-            </PrimaryButton>
-            <SecondaryButton v-if="cancelable" @click="emit('cancel')">
+        <div class="flex items-center justify-end gap-2">
+            <CommentButton
+                v-if="cancelable"
+                variant="cancel"
+                icon="close"
+                @click="emit('cancel')"
+            >
                 취소
-            </SecondaryButton>
+            </CommentButton>
+            <CommentButton
+                type="submit"
+                variant="submit"
+                icon="send"
+                :processing="form.processing"
+            >
+                {{ parentId ? '답글 등록' : '댓글 등록' }}
+            </CommentButton>
         </div>
     </form>
 </template>

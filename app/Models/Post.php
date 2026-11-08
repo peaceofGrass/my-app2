@@ -7,6 +7,8 @@ use App\Models\Concerns\HasReactions;
 use App\Support\PostContent;
 use Database\Factories\PostFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
+use Illuminate\Database\Eloquent\Attributes\Scope;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -29,6 +31,31 @@ class Post extends Model
         return [
             'is_published' => 'boolean',
         ];
+    }
+
+    /**
+     * The longest search query that is used, in characters, and the most words it may hold.
+     */
+    public const SEARCH_MAX_LENGTH = 100;
+
+    public const SEARCH_MAX_TERMS = 5;
+
+    /**
+     * Limit the query to posts whose title or body contains every word of the search.
+     *
+     * @param  Builder<Post>  $query
+     */
+    #[Scope]
+    protected function search(Builder $query, string $search): void
+    {
+        $terms = array_slice(array_unique(preg_split('/\s+/u', trim($search), -1, PREG_SPLIT_NO_EMPTY) ?: []), 0, self::SEARCH_MAX_TERMS);
+
+        foreach ($terms as $term) {
+            // Escape LIKE wildcards so "%" or "_" match themselves instead of anything.
+            $pattern = '%'.addcslashes($term, '\\%_').'%';
+
+            $query->whereAny(['title', 'content'], 'like', $pattern);
+        }
     }
 
     /**

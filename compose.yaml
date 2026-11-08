@@ -1,3 +1,8 @@
+# Rootless Podman: laravel.test maps its uid/gid 1000 (Sail's `sail` user, WWWUSER) to the host
+# user, so files either side writes are owned by the same user. A custom id map cannot be
+# combined with a pod, so podman-compose must not put the services in one.
+x-podman:
+    in_pod: false
 services:
     laravel.test:
         build:
@@ -7,6 +12,17 @@ services:
                 WWWGROUP: '${WWWGROUP}'
                 MYSQL_CLIENT: mariadb-client
         image: 'sail-8.5/app'
+        # Like --userns=keep-id, but without the /etc/passwd entry keep-id adds for uid 1000,
+        # which makes Sail's `usermod -u $WWWUSER sail` fail. Host ids here are relative to the
+        # rootless namespace: 0 is the host user, 1.. are its subordinate ids.
+        x-podman.uidmaps:
+            - '0:1:1000'
+            - '1000:0:1'
+            - '1001:1001:64535'
+        x-podman.gidmaps:
+            - '0:1:1000'
+            - '1000:0:1'
+            - '1001:1001:64535'
         extra_hosts:
             - 'host.docker.internal:host-gateway'
         ports:

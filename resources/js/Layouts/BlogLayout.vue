@@ -1,5 +1,6 @@
 <script setup>
 import ApplicationLogo from '@/Components/ApplicationLogo.vue';
+import SearchBox from '@/Components/SearchBox.vue';
 import UserMenu from '@/Components/UserMenu.vue';
 import { Link } from '@inertiajs/vue3';
 </script>
@@ -14,19 +15,22 @@ import { Link } from '@inertiajs/vue3';
             >
                 <Link
                     :href="route('posts.index')"
-                    class="flex items-center gap-3"
+                    class="flex shrink-0 items-center gap-3"
                 >
                     <ApplicationLogo
                         class="block h-9 w-auto fill-current text-green-600 dark:text-green-400"
                     />
                     <span
-                        class="text-lg font-semibold text-stone-800 dark:text-stone-200"
+                        class="hidden text-lg font-semibold text-stone-800 sm:inline dark:text-stone-200"
                     >
                         Blog
                     </span>
                 </Link>
 
-                <div class="flex items-center gap-4 text-sm font-medium">
+                <div
+                    class="flex items-center gap-3 text-sm font-medium sm:gap-4"
+                >
+                    <SearchBox />
                     <template v-if="$page.props.auth.user">
                         <UserMenu />
                     </template>

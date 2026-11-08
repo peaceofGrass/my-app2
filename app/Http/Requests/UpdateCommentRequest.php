@@ -2,11 +2,14 @@
 
 namespace App\Http\Requests;
 
+use App\Http\Requests\Concerns\ValidatesImageUploads;
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
 
 class UpdateCommentRequest extends FormRequest
 {
+    use ValidatesImageUploads;
+
     /**
      * Only the author may update the comment.
      */
@@ -24,6 +27,7 @@ class UpdateCommentRequest extends FormRequest
     {
         return [
             'content' => ['required', 'string', 'max:5000'],
+            ...$this->imageUpdateRules($this->route('comment')),
         ];
     }
 }

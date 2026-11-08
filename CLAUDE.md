@@ -9,6 +9,7 @@ PHP, Composer, Node, and npm commands must run **inside the container** via `./v
 ## Environment
 
 - `docker` is a symlink to `podman`; `docker compose` delegates to `podman-compose`. Sail uses `compose.yaml`.
+- File ownership: `compose.yaml` maps the container's uid/gid 1000 (the `sail` user) to the host user via `x-podman.uidmaps`/`gidmaps`, with `x-podman.in_pod: false` (a custom id map cannot share a pod). Files written by `sail` commands are therefore owned by the host user and vice versa. Do not switch to `userns_mode: keep-id`: it adds a passwd entry for uid 1000 that breaks Sail's start script. Commands run as container root (e.g. `sail exec` without `-u sail`) create files owned by a subordinate uid (100000) on the host; avoid writing project files that way.
 - Services (`compose.yaml`): `laravel.test` (Sail PHP 8.5 runtime, app on port 80, Vite on 5173), `mariadb` (MariaDB 11), `redis`.
 - There is **no nginx** in this setup: the Sail container serves the app with `php artisan serve` under supervisord. If nginx is added later, update this section.
 - `.env`: `DB_CONNECTION=mariadb`, `DB_HOST=mariadb`. Session, cache, and queue all use the `database` driver. Mail goes to `log`.

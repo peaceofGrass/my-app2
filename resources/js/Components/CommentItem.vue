@@ -1,10 +1,11 @@
 <script setup>
 import AttachmentImages from '@/Components/AttachmentImages.vue';
+import CommentButton from '@/Components/CommentButton.vue';
 import CommentForm from '@/Components/CommentForm.vue';
+import ExistingAttachments from '@/Components/ExistingAttachments.vue';
+import ImageInput from '@/Components/ImageInput.vue';
 import InputError from '@/Components/InputError.vue';
-import PrimaryButton from '@/Components/PrimaryButton.vue';
 import ReactionButtons from '@/Components/ReactionButtons.vue';
-import SecondaryButton from '@/Components/SecondaryButton.vue';
 import { router, useForm, usePage } from '@inertiajs/vue3';
 import { computed, ref } from 'vue';
 
@@ -51,19 +52,35 @@ const editing = ref(false);
 
 const editForm = useForm({
     content: props.comment.content,
+    attachments: [],
+    remove_attachments: [],
 });
+
+const errorsFor = (field) =>
+    Object.entries(editForm.errors)
+        .filter(([key]) => key === field || key.startsWith(`${field}.`))
+        .map(([, message]) => message);
+
+const attachmentErrors = computed(() => errorsFor('attachments'));
+const removalErrors = computed(() => errorsFor('remove_attachments'));
 
 const startEditing = () => {
     editForm.content = props.comment.content;
+    editForm.attachments = [];
+    editForm.remove_attachments = [];
     editForm.clearErrors();
     editing.value = true;
 };
 
 const update = () => {
-    editForm.patch(route('comments.update', props.comment.id), {
-        preserveScroll: true,
-        onSuccess: () => (editing.value = false),
-    });
+    // PHP cannot parse multipart PATCH bodies, so file uploads use method spoofing.
+    editForm
+        .transform((data) => ({ ...data, _method: 'patch' }))
+        .post(route('comments.update', props.comment.id), {
+            forceFormData: true,
+            preserveScroll: true,
+            onSuccess: () => (editing.value = false),
+        });
 };
 
 const destroy = () => {
@@ -110,13 +127,36 @@ const formatDate = (value) =>
                     required
                 />
                 <InputError :message="editForm.errors.content" />
-                <div class="flex gap-2">
-                    <PrimaryButton :disabled="editForm.processing">
-                        저장
-                    </PrimaryButton>
-                    <SecondaryButton @click="editing = false">
+                <ExistingAttachments
+                    v-if="comment.attachments.length"
+                    v-model="editForm.remove_attachments"
+                    :attachments="comment.attachments"
+                    :errors="removalErrors"
+                />
+                <ImageInput
+                    v-model="editForm.attachments"
+                    :existing="
+                        comment.attachments.length -
+                        editForm.remove_attachments.length
+                    "
+                    :errors="attachmentErrors"
+                />
+                <div class="flex items-center justify-end gap-2">
+                    <CommentButton
+                        variant="cancel"
+                        icon="close"
+                        @click="editing = false"
+                    >
                         취소
-                    </SecondaryButton>
+                    </CommentButton>
+                    <CommentButton
+                        type="submit"
+                        variant="submit"
+                        icon="check"
+                        :processing="editForm.processing"
+                    >
+                        저장
+                    </CommentButton>
                 </div>
             </form>
             <p
@@ -132,6 +172,7 @@ const formatDate = (value) =>
             </p>
 
             <AttachmentImages
+                v-if="!editing"
                 class="mt-3"
                 :attachments="comment.attachments"
                 compact
@@ -139,7 +180,7 @@ const formatDate = (value) =>
 
             <div
                 v-if="!editing"
-                class="mt-3 flex flex-wrap items-center gap-4 text-xs font-medium"
+                class="mt-3 flex flex-wrap items-center gap-2 text-xs font-medium"
             >
                 <ReactionButtons
                     :url="route('comments.reaction', comment.id)"
@@ -147,30 +188,26 @@ const formatDate = (value) =>
                     :dislikes="comment.dislikes_count"
                     :my-reaction="comment.my_reaction"
                 />
-                <button
+                <CommentButton
                     v-if="$page.props.auth.user"
-                    type="button"
-                    class="text-stone-600 hover:text-stone-900 dark:text-stone-400 dark:hover:text-stone-100"
+                    icon="reply"
+                    :active="replying"
                     :aria-expanded="replying"
                     @click="replying = !replying"
                 >
                     {{ replying ? '답글 취소' : '답글 작성' }}
-                </button>
+                </CommentButton>
                 <template v-if="isAuthor">
-                    <button
-                        type="button"
-                        class="text-stone-600 hover:text-stone-900 dark:text-stone-400 dark:hover:text-stone-100"
-                        @click="startEditing"
-                    >
+                    <CommentButton icon="pencil" @click="startEditing">
                         수정
-                    </button>
-                    <button
-                        type="button"
-                        class="text-red-600 hover:text-red-800 dark:text-red-400 dark:hover:text-red-300"
+                    </CommentButton>
+                    <CommentButton
+                        variant="danger"
+                        icon="trash"
                         @click="destroy"
                     >
                         삭제
-                    </button>
+                    </CommentButton>
                 </template>
             </div>
         </div>

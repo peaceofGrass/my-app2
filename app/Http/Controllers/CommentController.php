@@ -34,11 +34,20 @@ class CommentController extends Controller
     }
 
     /**
-     * Update the comment. Authorization is handled by UpdateCommentRequest.
+     * Update the comment, removing selected images and storing new ones.
+     * Authorization is handled by UpdateCommentRequest.
      */
     public function update(UpdateCommentRequest $request, Comment $comment): RedirectResponse
     {
-        $comment->update($request->validated());
+        DB::transaction(function () use ($request, $comment) {
+            $comment->update($request->safe()->only(['content']));
+
+            Attachment::purge(
+                $comment->attachments()->whereKey($request->validated('remove_attachments', []))->get(),
+            );
+
+            $comment->storeAttachments($request->file('attachments', []));
+        });
 
         return Redirect::route('posts.show', $comment->post_id);
     }

@@ -16,18 +16,23 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Redirect;
+use Illuminate\Support\Str;
 use Inertia\Inertia;
 use Inertia\Response;
 
 class PostController extends Controller
 {
     /**
-     * Display a paginated list of published posts, newest first.
+     * Display a paginated list of published posts, newest first, optionally filtered by a search (?q=).
      */
-    public function index(): Response
+    public function index(Request $request): Response
     {
+        $input = $request->query('q');
+        $search = is_string($input) ? mb_substr(Str::squish($input), 0, Post::SEARCH_MAX_LENGTH) : '';
+
         $posts = Post::query()
             ->where('is_published', true)
+            ->when($search !== '', fn (Builder $query) => $query->search($search))
             ->with(['user:id,name', 'attachments'])
             ->latest()
             ->latest('id')
@@ -37,6 +42,7 @@ class PostController extends Controller
 
         return Inertia::render('Posts/Index', [
             'posts' => $posts,
+            'filters' => ['q' => $search],
         ]);
     }
 

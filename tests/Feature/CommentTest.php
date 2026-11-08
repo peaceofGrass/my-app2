@@ -117,3 +117,58 @@ test('deleting a comment removes its nested replies and their attachment files',
     Storage::disk('public')->assertMissing([$commentFile->file_path, $nestedFile->file_path]);
     Storage::disk('public')->assertExists($siblingFile->file_path);
 });
+
+test('authors can add and remove images when updating a comment', function () {
+    Storage::fake('public');
+
+    $comment = Comment::factory()->create();
+    $keep = Attachment::factory()->for($comment, 'attachable')->create();
+    $remove = Attachment::factory()->for($comment, 'attachable')->create();
+    Storage::disk('public')->put($keep->file_path, 'x');
+    Storage::disk('public')->put($remove->file_path, 'x');
+
+    $this->actingAs($comment->user)
+        ->patch("/comments/{$comment->id}", [
+            'content' => 'Edited',
+            'attachments' => [UploadedFile::fake()->image('new.jpg')],
+            'remove_attachments' => [$remove->id],
+        ])
+        ->assertSessionHasNoErrors()
+        ->assertRedirect("/posts/{$comment->post_id}");
+
+    $this->assertModelMissing($remove);
+    Storage::disk('public')->assertMissing($remove->file_path);
+    Storage::disk('public')->assertExists($keep->file_path);
+    expect($comment->attachments()->pluck('original_name')->all())
+        ->toEqualCanonicalizing([$keep->original_name, 'new.jpg']);
+});
+
+test('updating a comment cannot exceed ten images including the existing ones', function () {
+    Storage::fake('public');
+
+    $comment = Comment::factory()->create();
+    Attachment::factory()->count(10)->for($comment, 'attachable')->create();
+
+    $this->actingAs($comment->user)
+        ->patch("/comments/{$comment->id}", [
+            'content' => 'Edited',
+            'attachments' => [UploadedFile::fake()->image('a.jpg')],
+        ])
+        ->assertSessionHasErrors('attachments');
+
+    expect($comment->attachments()->count())->toBe(10);
+});
+
+test("authors cannot remove another comment's attachments", function () {
+    $comment = Comment::factory()->create();
+    $foreign = Attachment::factory()->for(Comment::factory(), 'attachable')->create();
+
+    $this->actingAs($comment->user)
+        ->patch("/comments/{$comment->id}", [
+            'content' => 'Edited',
+            'remove_attachments' => [$foreign->id],
+        ])
+        ->assertSessionHasErrors('remove_attachments.0');
+
+    $this->assertModelExists($foreign);
+});

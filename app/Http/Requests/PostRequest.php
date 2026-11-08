@@ -3,13 +3,11 @@
 namespace App\Http\Requests;
 
 use App\Http\Requests\Concerns\ValidatesImageUploads;
-use App\Models\Attachment;
 use App\Models\Post;
 use App\Support\PostContent;
 use Closure;
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
-use Illuminate\Validation\Rule;
 
 class PostRequest extends FormRequest
 {
@@ -57,16 +55,7 @@ class PostRequest extends FormRequest
                 },
             ],
             'is_published' => ['required', 'boolean'],
-            ...$this->imageUploadRules(),
-            ...($post instanceof Post ? [
-                'remove_attachments' => ['nullable', 'array'],
-                'remove_attachments.*' => [
-                    'integer',
-                    Rule::exists(Attachment::class, 'id')
-                        ->where('attachable_type', $post->getMorphClass())
-                        ->where('attachable_id', $post->id),
-                ],
-            ] : []),
+            ...($post instanceof Post ? $this->imageUpdateRules($post) : $this->imageUploadRules()),
         ];
     }
 }

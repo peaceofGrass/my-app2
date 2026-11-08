@@ -253,3 +253,48 @@ test("authors cannot remove another post's attachments", function () {
 
     $this->assertModelExists($foreign);
 });
+
+test('updating a post cannot exceed ten images including the existing ones', function () {
+    Storage::fake('public');
+
+    $post = Post::factory()->create();
+    Attachment::factory()->count(8)->for($post, 'attachable')->create();
+
+    $this->actingAs($post->user)
+        ->patch("/posts/{$post->id}", [
+            'title' => 'T',
+            'content' => 'C',
+            'is_published' => '1',
+            'attachments' => [
+                UploadedFile::fake()->image('a.jpg'),
+                UploadedFile::fake()->image('b.jpg'),
+                UploadedFile::fake()->image('c.jpg'),
+            ],
+        ])
+        ->assertSessionHasErrors('attachments');
+
+    expect($post->attachments()->count())->toBe(8);
+});
+
+test('images marked for removal free up room when updating a post', function () {
+    Storage::fake('public');
+
+    $post = Post::factory()->create();
+    $attachments = Attachment::factory()->count(8)->for($post, 'attachable')->create();
+
+    $this->actingAs($post->user)
+        ->patch("/posts/{$post->id}", [
+            'title' => 'T',
+            'content' => 'C',
+            'is_published' => '1',
+            'remove_attachments' => [$attachments->first()->id],
+            'attachments' => [
+                UploadedFile::fake()->image('a.jpg'),
+                UploadedFile::fake()->image('b.jpg'),
+                UploadedFile::fake()->image('c.jpg'),
+            ],
+        ])
+        ->assertSessionHasNoErrors();
+
+    expect($post->attachments()->count())->toBe(10);
+});

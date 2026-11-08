@@ -1,9 +1,9 @@
 <script setup>
 import Checkbox from '@/Components/Checkbox.vue';
+import ExistingAttachments from '@/Components/ExistingAttachments.vue';
 import ImageInput from '@/Components/ImageInput.vue';
 import InputError from '@/Components/InputError.vue';
 import InputLabel from '@/Components/InputLabel.vue';
-import PrimaryButton from '@/Components/PrimaryButton.vue';
 import RichTextEditor from '@/Components/RichTextEditor.vue';
 import TextInput from '@/Components/TextInput.vue';
 import { Link, useForm } from '@inertiajs/vue3';
@@ -25,14 +25,6 @@ const form = useForm({
     remove_attachments: [],
 });
 
-const isImage = (attachment) => attachment.mime_type.startsWith('image/');
-
-const toggleRemoval = (id) => {
-    form.remove_attachments = form.remove_attachments.includes(id)
-        ? form.remove_attachments.filter((removeId) => removeId !== id)
-        : [...form.remove_attachments, id];
-};
-
 // Validation errors arrive per file as `attachments.0`, `attachments.1`, ...
 const errorsFor = (field) =>
     Object.entries(form.errors)
@@ -41,6 +33,11 @@ const errorsFor = (field) =>
 
 const attachmentErrors = computed(() => errorsFor('attachments'));
 const removalErrors = computed(() => errorsFor('remove_attachments'));
+
+const keptCount = computed(
+    () =>
+        (props.post?.attachments.length ?? 0) - form.remove_attachments.length,
+);
 
 const submit = () => {
     // PHP cannot parse multipart PATCH bodies, so file uploads use method spoofing.
@@ -88,57 +85,19 @@ const submit = () => {
             <InputError class="mt-2" :message="form.errors.is_published" />
         </div>
 
-        <div v-if="post?.attachments.length">
-            <InputLabel value="기존 첨부파일" />
-            <p class="mt-1 text-xs text-stone-500 dark:text-stone-400">
-                클릭하면 삭제 예정으로 표시되고, 저장할 때 삭제됩니다.
-            </p>
-            <ul class="mt-3 grid grid-cols-3 gap-3 sm:grid-cols-5">
-                <li v-for="attachment in post.attachments" :key="attachment.id">
-                    <button
-                        type="button"
-                        class="relative block aspect-square w-full overflow-hidden rounded-md bg-stone-100 focus:outline-none focus:ring-2 focus:ring-orange-500 dark:bg-stone-700"
-                        :aria-pressed="
-                            form.remove_attachments.includes(attachment.id)
-                        "
-                        @click="toggleRemoval(attachment.id)"
-                    >
-                        <img
-                            v-if="isImage(attachment)"
-                            :src="attachment.url"
-                            :alt="attachment.original_name"
-                            class="h-full w-full object-cover"
-                        />
-                        <span
-                            v-else
-                            class="flex h-full items-center justify-center break-all p-2 text-xs text-stone-500 dark:text-stone-400"
-                        >
-                            {{ attachment.original_name }}
-                        </span>
-                        <span
-                            v-if="
-                                form.remove_attachments.includes(attachment.id)
-                            "
-                            class="absolute inset-0 flex items-center justify-center bg-red-600/70 text-sm font-semibold text-white"
-                        >
-                            삭제 예정
-                        </span>
-                    </button>
-                </li>
-            </ul>
-            <InputError
-                v-for="error in removalErrors"
-                :key="error"
-                class="mt-2"
-                :message="error"
-            />
-        </div>
+        <ExistingAttachments
+            v-if="post?.attachments.length"
+            v-model="form.remove_attachments"
+            :attachments="post.attachments"
+            :errors="removalErrors"
+        />
 
         <div>
             <InputLabel value="이미지 첨부" />
             <ImageInput
                 v-model="form.attachments"
                 class="mt-2"
+                :existing="keptCount"
                 :errors="attachmentErrors"
             />
         </div>
@@ -152,18 +111,77 @@ const submit = () => {
             {{ form.progress.percentage }}%
         </progress>
 
-        <div class="flex items-center gap-4">
-            <PrimaryButton :disabled="form.processing">
-                {{ post ? '수정하기' : '작성하기' }}
-            </PrimaryButton>
+        <div
+            class="flex items-center justify-end gap-3 border-t border-orange-200 pt-6 dark:border-orange-900"
+        >
             <Link
                 :href="
                     post ? route('posts.show', post.id) : route('posts.index')
                 "
-                class="text-sm text-stone-600 hover:text-stone-900 dark:text-stone-400 dark:hover:text-stone-100"
+                class="inline-flex items-center gap-1.5 rounded-full px-5 py-2.5 text-sm font-medium text-stone-600 transition duration-150 ease-in-out hover:bg-stone-100 hover:text-stone-900 focus:outline-none focus-visible:ring-2 focus-visible:ring-stone-400 focus-visible:ring-offset-2 dark:text-stone-400 dark:hover:bg-stone-700 dark:hover:text-stone-100 dark:focus-visible:ring-offset-stone-800"
             >
+                <svg
+                    class="h-4 w-4"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    aria-hidden="true"
+                >
+                    <path d="M18 6 6 18M6 6l12 12" />
+                </svg>
                 취소
             </Link>
+            <button
+                type="submit"
+                class="group inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-orange-500 to-amber-500 px-6 py-2.5 text-sm font-semibold text-white shadow-md shadow-orange-500/30 transition duration-150 ease-in-out hover:from-orange-600 hover:to-amber-500 hover:shadow-lg hover:shadow-orange-500/40 focus:outline-none focus-visible:ring-2 focus-visible:ring-orange-500 focus-visible:ring-offset-2 active:scale-[0.98] disabled:cursor-wait disabled:opacity-70 motion-safe:hover:-translate-y-0.5 motion-safe:active:translate-y-0 dark:shadow-orange-900/40 dark:focus-visible:ring-offset-stone-800"
+                :disabled="form.processing"
+            >
+                <svg
+                    v-if="form.processing"
+                    class="h-4 w-4 animate-spin"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    aria-hidden="true"
+                >
+                    <circle
+                        cx="12"
+                        cy="12"
+                        r="9"
+                        stroke="currentColor"
+                        stroke-width="3"
+                        class="opacity-25"
+                    />
+                    <path
+                        d="M21 12a9 9 0 0 0-9-9"
+                        stroke="currentColor"
+                        stroke-width="3"
+                        stroke-linecap="round"
+                    />
+                </svg>
+                <svg
+                    v-else
+                    class="h-4 w-4 transition-transform duration-200 motion-safe:group-hover:translate-x-0.5"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2.5"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    aria-hidden="true"
+                >
+                    <path d="M20 6 9 17l-5-5" />
+                </svg>
+                {{
+                    form.processing
+                        ? '저장 중...'
+                        : post
+                          ? '수정하기'
+                          : '작성하기'
+                }}
+            </button>
         </div>
     </form>
 </template>

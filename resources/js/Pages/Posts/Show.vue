@@ -2,7 +2,6 @@
 import AttachmentImages from '@/Components/AttachmentImages.vue';
 import CommentForm from '@/Components/CommentForm.vue';
 import CommentItem from '@/Components/CommentItem.vue';
-import DangerButton from '@/Components/DangerButton.vue';
 import ReactionButtons from '@/Components/ReactionButtons.vue';
 import BlogLayout from '@/Layouts/BlogLayout.vue';
 import { Head, Link, router, usePage } from '@inertiajs/vue3';
@@ -81,12 +80,12 @@ const destroy = () => {
             <div class="mx-auto max-w-4xl space-y-6 px-4 sm:px-6 lg:px-8">
                 <Link
                     :href="route('posts.index')"
-                    class="group inline-flex items-center gap-1.5 rounded-md text-sm font-medium text-stone-500 transition hover:text-orange-600 focus:outline-none focus-visible:ring-2 focus-visible:ring-orange-500 focus-visible:ring-offset-2 dark:text-stone-400 dark:hover:text-orange-400 dark:focus-visible:ring-offset-stone-900"
+                    class="group inline-flex items-center gap-1.5 rounded-full border border-stone-200 bg-white py-1.5 pe-4 ps-3 text-sm font-medium text-stone-600 shadow-sm transition duration-150 ease-in-out hover:border-orange-300 hover:text-orange-600 hover:shadow focus:outline-none focus-visible:ring-2 focus-visible:ring-orange-500 focus-visible:ring-offset-2 active:scale-[0.98] dark:border-stone-700 dark:bg-stone-800 dark:text-stone-300 dark:hover:border-orange-700 dark:hover:text-orange-400 dark:focus-visible:ring-offset-stone-900"
                 >
                     <svg
                         viewBox="0 0 20 20"
                         fill="currentColor"
-                        class="h-4 w-4 transition group-hover:-translate-x-0.5"
+                        class="h-4 w-4 transition-transform duration-200 motion-safe:group-hover:-translate-x-0.5"
                         aria-hidden="true"
                     >
                         <path
@@ -129,13 +128,51 @@ const destroy = () => {
                             <div v-if="isAuthor" class="flex gap-2">
                                 <Link
                                     :href="route('posts.edit', post.id)"
-                                    class="inline-flex items-center rounded-md border border-stone-300 bg-white px-4 py-2 text-xs font-semibold uppercase tracking-widest text-stone-700 shadow-sm transition duration-150 ease-in-out hover:bg-stone-50 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:ring-offset-2 dark:border-stone-500 dark:bg-stone-800 dark:text-stone-300 dark:hover:bg-stone-700 dark:focus:ring-offset-stone-800"
+                                    class="group inline-flex items-center gap-1.5 rounded-full border border-orange-200 bg-orange-50 px-4 py-1.5 text-sm font-medium text-orange-700 transition duration-150 ease-in-out hover:border-orange-300 hover:bg-orange-100 hover:shadow-sm focus:outline-none focus-visible:ring-2 focus-visible:ring-orange-500 focus-visible:ring-offset-2 active:scale-[0.98] motion-safe:hover:-translate-y-0.5 motion-safe:active:translate-y-0 dark:border-orange-800 dark:bg-orange-900/30 dark:text-orange-300 dark:hover:border-orange-700 dark:hover:bg-orange-900/50 dark:focus-visible:ring-offset-stone-800"
                                 >
+                                    <svg
+                                        class="h-4 w-4 transition-transform duration-200 motion-safe:group-hover:-rotate-12"
+                                        viewBox="0 0 24 24"
+                                        fill="none"
+                                        stroke="currentColor"
+                                        stroke-width="2"
+                                        stroke-linecap="round"
+                                        stroke-linejoin="round"
+                                        aria-hidden="true"
+                                    >
+                                        <path d="M12 20h9" />
+                                        <path
+                                            d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z"
+                                        />
+                                    </svg>
                                     수정
                                 </Link>
-                                <DangerButton @click="destroy"
-                                    >삭제</DangerButton
+                                <button
+                                    type="button"
+                                    class="group inline-flex items-center gap-1.5 rounded-full border border-transparent px-4 py-1.5 text-sm font-medium text-red-600 transition duration-150 ease-in-out hover:border-red-200 hover:bg-red-50 hover:text-red-700 focus:outline-none focus-visible:ring-2 focus-visible:ring-red-500 focus-visible:ring-offset-2 active:scale-[0.98] dark:text-red-400 dark:hover:border-red-900 dark:hover:bg-red-900/30 dark:hover:text-red-300 dark:focus-visible:ring-offset-stone-800"
+                                    @click="destroy"
                                 >
+                                    <svg
+                                        class="h-4 w-4 transition-transform duration-200 motion-safe:group-hover:scale-110"
+                                        viewBox="0 0 24 24"
+                                        fill="none"
+                                        stroke="currentColor"
+                                        stroke-width="2"
+                                        stroke-linecap="round"
+                                        stroke-linejoin="round"
+                                        aria-hidden="true"
+                                    >
+                                        <path d="M3 6h18" />
+                                        <path
+                                            d="M8 6V4a1 1 0 0 1 1-1h6a1 1 0 0 1 1 1v2"
+                                        />
+                                        <path
+                                            d="m19 6-1 14a1 1 0 0 1-1 1H7a1 1 0 0 1-1-1L5 6"
+                                        />
+                                        <path d="M10 11v6M14 11v6" />
+                                    </svg>
+                                    삭제
+                                </button>
                             </div>
                         </div>
                     </header>
